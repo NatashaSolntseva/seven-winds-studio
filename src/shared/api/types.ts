@@ -15,11 +15,15 @@ export interface InitialRowData {
 }
 
 export interface RowData extends InitialRowData {
-  editing?: boolean;
-  childCounter?: number;
-  lastChildCount?: number;
-  parentId?: number | null;
+  editing: boolean;
+  childCounter: number;
+  lastChildCount: number;
+  parentId: number | null | undefined;
+  child: RowData[];
 }
 
 export interface NewNodeDataAPI
-  extends Omit<RowData, "id" | "total" | "child"> {}
+  extends Omit<
+    RowData,
+    "id" | "total" | "child" | "editing" | "childCounter" | "lastChildCount"
+  > {}

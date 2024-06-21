@@ -23,7 +23,18 @@ export const getTreeRows = createAsyncThunk(
 
 export const createRow = createAsyncThunk(
   "row/createRow",
-  async (newRow: NewNodeDataAPI, { rejectWithValue }) => {
+  async (
+    {
+      parentId,
+      tempId,
+      newRow,
+    }: {
+      parentId: number | null | undefined;
+      tempId: number;
+      newRow: NewNodeDataAPI;
+    },
+    { rejectWithValue }
+  ) => {
     try {
       const { data } = await axios.post(
         `${BASE_URL}/v1/outlay-rows/entity/126491/row/create`,

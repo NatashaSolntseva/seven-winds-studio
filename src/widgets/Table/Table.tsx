@@ -8,6 +8,7 @@ import TableRow from "../../entities/TableRow/TableRow";
 import { getTreeRows } from "../../shared/api";
 
 import style from "./Table.module.sass";
+import { Loader } from "../../shared/components/Loader/Loader";
 
 export function Table() {
   const dispatch = useAppDispatch();
@@ -23,7 +24,9 @@ export function Table() {
   console.log("MegaTree EDITED", editedRowData);
 
   return isLoading ? (
-    <div>Loading....</div>
+    <div className={style.loaderWrapper}>
+      <Loader />
+    </div>
   ) : (
     <div className={style.table}>
       <div className={style.tableHead}>

@@ -10,8 +10,8 @@ import {
 import {
   addEditingFieldAndCountChildren,
   removeRowRecursive,
-  updateChangedRows,
   updateNode,
+  updateTemporaryNode,
 } from "./constants";
 
 interface IRowsState {
@@ -37,7 +37,7 @@ const rowSlice = createSlice({
     addEmptyNode: (state, action) => {
       const parentID = action.payload;
       const newNode: RowData = {
-        id: Date.now(), // Генерируем временный ID для нового узла Date.now()
+        id: Date.now(),
         parentId: parentID,
         total: 0,
         rowName: "",
@@ -117,7 +117,7 @@ const rowSlice = createSlice({
       state.editedRowData = toggleEdit(state.editedRowData, action.payload.id);
     },
   },
-
+  // ----------------------------------------------------------------------------------
   extraReducers: (builder) => {
     builder
       .addCase(getTreeRows.pending, (state) => {
@@ -152,7 +152,9 @@ const rowSlice = createSlice({
         }
 
         if (changed && changed.length > 0) {
-          state.editedRowData = updateChangedRows(state.editedRowData, changed);
+          state.editedRowData = state.editedRowData.map((row) =>
+            updateNode(row, changed)
+          );
         }
       })
       .addCase(deleteRowAndChild.rejected, (state, action) => {
@@ -168,40 +170,30 @@ const rowSlice = createSlice({
         state.isLoading = false;
         state.error = null;
 
-        console.log("New row created:", action.payload);
+        console.log("New row created (API response):", action.payload);
 
         const { current, changed } = action.payload;
+        const parentId = action.meta.arg.parentId;
+        console.log("parentId", parentId);
+        const tempId = action.meta.arg.tempId;
+        console.log("tempId", tempId);
 
         if (current) {
-          // Добавляем новую ноду к родительской ноде или корневому уровню
-          const addNewNodeRecursive = (
-            rows: RowData[],
-            newNode: RowData
-          ): RowData[] => {
-            return rows.map((row) => {
-              if (row.id === newNode.parentId) {
-                return {
-                  ...row,
-                  child: [...row.child, newNode],
-                };
-              } else if (row.child && row.child.length > 0) {
-                return {
-                  ...row,
-                  child: addNewNodeRecursive(row.child, newNode),
-                };
-              }
-              return row;
-            });
-          };
-
-          state.editedRowData = addNewNodeRecursive(
+          console.log(
+            "Заменяем ноду временную на данные с сервера вот эти",
+            current
+          );
+          state.editedRowData = updateTemporaryNode(
             state.editedRowData,
+            tempId,
             current
           );
         }
 
         if (changed && changed.length > 0) {
-          state.editedRowData = updateChangedRows(state.editedRowData, changed);
+          state.editedRowData = state.editedRowData.map((row) =>
+            updateNode(row, changed)
+          );
         }
       })
       .addCase(createRow.rejected, (state, action) => {

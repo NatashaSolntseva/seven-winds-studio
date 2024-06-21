@@ -33,7 +33,7 @@ type FormFields = yup.InferType<typeof schema>;
 
 const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
   const [hoveredIcon, setHoveredIcon] = useState(false);
-  const { editingRowId, isLoading } = useAppSelector(selectRows);
+  const { editingRowId } = useAppSelector(selectRows);
 
   const isEditing = editingRowId === row.id;
 
@@ -96,7 +96,9 @@ const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
 
     try {
       if (isNewRow) {
-        await dispatch(createRow(newNode));
+        await dispatch(
+          createRow({ parentId: row.parentId, tempId: row.id, newRow: newNode })
+        );
       } else {
         await dispatch(updateRow({ rowId: row.id, updatedData: newNode }));
       }
@@ -114,9 +116,7 @@ const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
     }
   };
 
-  return isLoading ? (
-    <div>Loading....</div>
-  ) : (
+  return (
     <>
       <form
         className={style.tableRow}

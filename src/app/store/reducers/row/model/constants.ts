@@ -4,8 +4,8 @@ import { InitialRowData, RowData } from "../../../../../shared/api/types";
 const addEditingFieldAndCountChildren = (data: InitialRowData[]): RowData[] => {
   // Рекурсивная функция для обработки каждого узла
   const processNode = (
-    node: InitialRowData,
-    parentLastChildCount: number
+    node: InitialRowData
+    // parentLastChildCount: number
   ): RowData => {
     const processedChildren = node.child
       ? addEditingFieldAndCountChildren(node.child)
@@ -29,45 +29,12 @@ const addEditingFieldAndCountChildren = (data: InitialRowData[]): RowData[] => {
       child: processedChildren,
       childCounter,
       lastChildCount,
+      parentId: null,
     };
   };
 
   // Обрабатываем все узлы на текущем уровне
   return data.map(processNode);
-};
-
-const updateChangedRows = (
-  rows: RowData[],
-  changedRows: RowData[]
-): RowData[] => {
-  return rows.map((row) => {
-    const updatedRow = changedRows.find(
-      (changedRow) => changedRow.id === row.id
-    );
-    if (updatedRow) {
-      return { ...row, ...updatedRow };
-    } else if (row.child) {
-      return {
-        ...row,
-        child: updateChangedRows(row.child, changedRows),
-      };
-    }
-    return row;
-  });
-};
-
-const removeRowRecursive = (rows: RowData[], id: number): RowData[] => {
-  return rows.reduce((acc, row) => {
-    if (row.id === id) {
-      // Удаляем текущую строку
-      return acc;
-    } else if (row.child) {
-      // Удаляем дочерние элементы текущей строки
-      const updatedChild = removeRowRecursive(row.child, id);
-      return [...acc, { ...row, child: updatedChild }];
-    }
-    return [...acc, row];
-  }, [] as RowData[]);
 };
 
 // Функция для рекурсивного обновления узла и его детей
@@ -90,9 +57,45 @@ const updateNode = (node: RowData, updatedNodes: RowData[]): RowData => {
   return node;
 };
 
+const removeRowRecursive = (rows: RowData[], id: number): RowData[] => {
+  return rows.reduce((acc, row) => {
+    if (row.id === id) {
+      // Удаляем текущую строку
+      return acc;
+    } else if (row.child) {
+      // Удаляем дочерние элементы текущей строки
+      const updatedChild = removeRowRecursive(row.child, id);
+      return [...acc, { ...row, child: updatedChild }];
+    }
+    return [...acc, row];
+  }, [] as RowData[]);
+};
+
+// Находим временную ноду в состоянии и обновляем её поля данными от сервера
+const updateTemporaryNode = (
+  rows: RowData[],
+  tempNodeId: number,
+  newData: Partial<RowData>
+): RowData[] => {
+  return rows.map((row) => {
+    if (row.id === tempNodeId) {
+      return {
+        ...row,
+        ...newData, // Обновляем только указанные поля данными от сервера
+      };
+    } else if (row.child && row.child.length > 0) {
+      return {
+        ...row,
+        child: updateTemporaryNode(row.child, tempNodeId, newData),
+      };
+    }
+    return row;
+  });
+};
+
 export {
-  updateChangedRows,
   removeRowRecursive,
   addEditingFieldAndCountChildren,
   updateNode,
+  updateTemporaryNode,
 };
