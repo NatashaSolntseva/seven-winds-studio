@@ -25,11 +25,9 @@ export const createRow = createAsyncThunk(
   "row/createRow",
   async (
     {
-      parentId,
       tempId,
       newRow,
     }: {
-      parentId: number | null | undefined;
       tempId: number;
       newRow: NewNodeDataAPI;
     },

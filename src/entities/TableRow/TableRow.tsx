@@ -96,9 +96,7 @@ const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
 
     try {
       if (isNewRow) {
-        await dispatch(
-          createRow({ parentId: row.parentId, tempId: row.id, newRow: newNode })
-        );
+        await dispatch(createRow({ tempId: row.id, newRow: newNode }));
       } else {
         await dispatch(updateRow({ rowId: row.id, updatedData: newNode }));
       }
