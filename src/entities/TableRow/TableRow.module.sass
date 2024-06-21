@@ -1,0 +1,66 @@
+@import '../../app/styles/variables.sass'
+
+.tableRow
+  display: grid
+  grid-template-columns: 110px 7fr repeat(4, minmax(200px, 2fr))
+  // padding-block: 21px 
+  font-size: 14px  
+  border-bottom: 1px solid $colorDarkGrey    
+
+.iconContainer  
+  display: flex  
+  align-items: center
+  position: relative
+  
+.iconWrapper
+  display: flex
+  align-items: center
+  padding-right: 25px  
+  
+.iconWrapper button
+  &:disabled
+    cursor: not-allowed
+
+.iconWrapperHovered
+  border-radius: 6px
+  background-color: $colorDarkGrey
+  padding: 2px 7px 2px 2px
+  z-index: 1
+
+
+.rootLine 
+  position: absolute
+  top: 30px
+  left: -9px
+  width: 12px
+  height: 1px
+  background-color: $colorWhitePrimary
+  margin-right: 5px
+
+.rootVerticalLine 
+  position: absolute
+  top: 40px
+  left: 10px
+  width: 1px
+  // height: 20px
+  background-color: $colorWhitePrimary
+  // margin-right: 5px
+
+
+.cellWrapper
+  display: flex
+  align-items: center  
+  padding: 12px
+  cursor: pointer
+.textWrapper 
+  padding: 12px
+.rowInput
+  width: 100%
+  background-color: transparent
+  font-family: $fontTextPrimary
+  font-size: 14px
+  color: $colorGrey
+  padding: 10px
+  outline: none
+  border: 1px solid $colorDarkGrey
+  border-radius: 6px

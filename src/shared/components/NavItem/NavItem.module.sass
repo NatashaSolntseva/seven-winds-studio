@@ -1,0 +1,24 @@
+@import '../../../app/styles/variables.sass'
+
+
+.listItem 
+  width: 100% 
+  display: flex
+  align-items: center
+  gap: 14px
+  padding-block: 5px
+  padding-left: 20px
+  cursor: pointer
+  transition: background-color 0.3s ease
+
+  &:hover
+    background-color: $colorLightGrey
+  &.active
+    background-color: $colorLightGrey  
+
+.listText
+  font-size: 14px
+  
+.listIcon
+  width: 22px
+  height: 22px
