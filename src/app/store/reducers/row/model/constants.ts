@@ -70,8 +70,29 @@ const removeRowRecursive = (rows: RowData[], id: number): RowData[] => {
   }, [] as RowData[]);
 };
 
+// Функция для рекурсивного обновления узла и его детей
+const updateNode = (node: RowData, updatedNodes: RowData[]): RowData => {
+  const updatedNode = updatedNodes.find((n) => n.id === node.id);
+  if (updatedNode) {
+    return {
+      ...node,
+      ...updatedNode,
+      child: node.child
+        ? node.child.map((child) => updateNode(child, updatedNodes))
+        : [],
+    };
+  } else if (node.child && node.child.length > 0) {
+    return {
+      ...node,
+      child: node.child.map((child) => updateNode(child, updatedNodes)),
+    };
+  }
+  return node;
+};
+
 export {
   updateChangedRows,
   removeRowRecursive,
   addEditingFieldAndCountChildren,
+  updateNode,
 };

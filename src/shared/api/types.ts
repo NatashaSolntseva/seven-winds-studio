@@ -18,8 +18,8 @@ export interface RowData extends InitialRowData {
   editing?: boolean;
   childCounter?: number;
   lastChildCount?: number;
-}
-
-export interface NewNodeData extends RowData {
   parentId?: number | null;
 }
+
+export interface NewNodeDataAPI
+  extends Omit<RowData, "id" | "total" | "child"> {}

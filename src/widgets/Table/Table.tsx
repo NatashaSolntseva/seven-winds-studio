@@ -3,9 +3,6 @@ import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
 import {
   initializeEditingFields,
   selectRows,
-  setEditingRowId,
-  toggleEditInTree,
-  updateInTree,
 } from "../../app/store/reducers/row/model/rowSlice";
 import TableRow from "../../entities/TableRow/TableRow";
 import { getTreeRows } from "../../shared/api";
@@ -21,24 +18,9 @@ export function Table() {
     });
   }, [dispatch]);
 
-  const { editedRowData, editingRowId, isLoading } = useAppSelector(selectRows);
+  const { editedRowData, isLoading } = useAppSelector(selectRows);
 
   console.log("MegaTree EDITED", editedRowData);
-
-  const toggleEdit = (id: number) => {
-    // Проверяем, если уже редактируется другая строка и она не равна текущей строке
-    if (editingRowId !== null && editingRowId !== id) {
-      return;
-    }
-
-    dispatch(toggleEditInTree({ id }));
-    dispatch(setEditingRowId(editingRowId === id ? null : id));
-  };
-
-  const handleUpdate = (id: number, field: string, value: string | number) => {
-    // Отправляем действие для обновления поля в Redux
-    dispatch(updateInTree({ id, field, value }));
-  };
 
   return isLoading ? (
     <div>Loading....</div>
@@ -54,14 +36,7 @@ export function Table() {
       </div>
       <div className={style.tableBody}>
         {editedRowData.map((row) => (
-          <TableRow
-            key={row.id}
-            row={row}
-            level={0}
-            toggleEdit={toggleEdit}
-            handleUpdate={handleUpdate}
-            editingRowId={editingRowId}
-          />
+          <TableRow key={row.id} row={row} level={0} />
         ))}
       </div>
     </div>

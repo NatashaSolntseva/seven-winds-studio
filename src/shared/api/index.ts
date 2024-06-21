@@ -1,5 +1,5 @@
 import axios from "axios";
-import { InitialRowData } from "./types";
+import { InitialRowData, NewNodeDataAPI } from "./types";
 import { BASE_URL } from "../../utils/const/api";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -23,7 +23,7 @@ export const getTreeRows = createAsyncThunk(
 
 export const createRow = createAsyncThunk(
   "row/createRow",
-  async (newRow: InitialRowData, { rejectWithValue }) => {
+  async (newRow: NewNodeDataAPI, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(
         `${BASE_URL}/v1/outlay-rows/entity/126491/row/create`,
@@ -43,7 +43,7 @@ export const createRow = createAsyncThunk(
 export const updateRow = createAsyncThunk(
   "row/updateRow",
   async (
-    { rowId, updatedData }: { rowId: number; updatedData: InitialRowData },
+    { rowId, updatedData }: { rowId: number; updatedData: NewNodeDataAPI },
     { rejectWithValue }
   ) => {
     try {

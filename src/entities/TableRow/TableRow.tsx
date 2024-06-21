@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import { useAppDispatch, useAppSelector } from "../../app/store/hooks";
 import {
@@ -7,39 +9,47 @@ import {
   selectRows,
   setEditingRowId,
   toggleEditInTree,
-  updateInTree,
 } from "../../app/store/reducers/row/model/rowSlice";
+
+import { formatNumber } from "../../utils/const/formatNumber";
+import { createRow, deleteRowAndChild, updateRow } from "../../shared/api";
+import { TableRowProps } from "./TableRow.types";
+import { NewNodeDataAPI } from "../../shared/api/types";
 
 import itemIcon from "../../assets/icons/item.svg";
 import deleteIcon from "../../assets/icons/trash.svg";
 
-import { formatNumber } from "../../utils/const/formatNumber";
-import { deleteRowAndChild } from "../../shared/api";
-import { TableRowProps } from "./TableRow.types";
-
 import style from "./TableRow.module.sass";
 
-type FormFields = {
-  rowName: string;
-  salary: number;
-  equipmentCosts: number;
-  overheads: number;
-  estimatedProfit: number;
-};
+const schema = yup.object({
+  rowName: yup.string(),
+  salary: yup.number(),
+  equipmentCosts: yup.number(),
+  overheads: yup.number(),
+  estimatedProfit: yup.number(),
+});
 
-const TableRow: React.FC<TableRowProps> = ({
-  row,
-  level,
-  // toggleEdit,
-  // handleUpdate,
-  //editingRowId,
-}) => {
+type FormFields = yup.InferType<typeof schema>;
+
+const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
   const [hoveredIcon, setHoveredIcon] = useState(false);
-  const { editedRowData, editingRowId, isLoading } = useAppSelector(selectRows);
+  const { editingRowId, isLoading } = useAppSelector(selectRows);
 
   const isEditing = editingRowId === row.id;
 
   const dispatch = useAppDispatch();
+
+  const { register, handleSubmit } = useForm<FormFields>({
+    mode: "onChange",
+    defaultValues: {
+      rowName: row.rowName || "",
+      salary: row.salary,
+      equipmentCosts: row.equipmentCosts,
+      overheads: row.overheads,
+      estimatedProfit: row.estimatedProfit,
+    },
+    resolver: yupResolver(schema),
+  });
 
   const handleDeleteRow = (rowIdToRemove: number) => {
     if (
@@ -55,27 +65,6 @@ const TableRow: React.FC<TableRowProps> = ({
     dispatch(addEmptyNode(parentId));
   };
 
-  const { register, handleSubmit } = useForm<FormFields>({
-    mode: "onChange",
-    defaultValues: {
-      rowName: "",
-      salary: 0,
-      equipmentCosts: 0,
-      overheads: 0,
-      estimatedProfit: 0,
-    },
-  });
-
-  const onSubmit: SubmitHandler<FormFields> = (data) => {
-    const newRow = {
-      ...data,
-      parentId: row.id,
-    };
-    console.log("DATA", data);
-    console.log("newRow", newRow);
-    dispatch(setEditingRowId(null));
-  };
-
   const toggleEdit = (id: number) => {
     // Проверяем, если уже редактируется другая строка и она не равна текущей строке
     if (editingRowId !== null && editingRowId !== id) {
@@ -86,23 +75,56 @@ const TableRow: React.FC<TableRowProps> = ({
     dispatch(setEditingRowId(editingRowId === id ? null : id));
   };
 
-  const handleUpdate = (id: number, field: string, value: string | number) => {
-    // Отправляем действие для обновления поля в Redux
-    dispatch(updateInTree({ id, field, value }));
+  const onSubmit: SubmitHandler<FormFields> = async (inputData) => {
+    const isNewRow = row.parentId === null || row.parentId !== undefined;
+
+    const newNode: NewNodeDataAPI = {
+      rowName: inputData.rowName || "",
+      salary: inputData.salary || 0,
+      equipmentCosts: inputData.equipmentCosts || 0,
+      overheads: inputData.overheads || 0,
+      estimatedProfit: inputData.estimatedProfit || 0,
+      parentId: row.parentId,
+      mimExploitation: 0,
+      machineOperatorSalary: 0,
+      materials: 0,
+      mainCosts: 0,
+      supportCosts: 0,
+    };
+
+    console.log("newRow inputData", newNode);
+
+    try {
+      if (isNewRow) {
+        await dispatch(createRow(newNode));
+      } else {
+        await dispatch(updateRow({ rowId: row.id, updatedData: newNode }));
+      }
+
+      dispatch(setEditingRowId(null));
+    } catch (error) {
+      console.error("Failed to create row:", error);
+    }
   };
 
-  return (
+  const handleUserKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(onSubmit)();
+    }
+  };
+
+  return isLoading ? (
+    <div>Loading....</div>
+  ) : (
     <>
       <form
         className={style.tableRow}
         onDoubleClick={() => toggleEdit(row.id)}
         style={{ paddingLeft: `${level * 20}px` }}
-        onSubmit={() => {
-          console.log("сабмит");
-          // e.preventDefault(); // Предотвращение стандартного поведения формы
-          handleSubmit(onSubmit); // Вызов обработчика handleSubmit
-        }}
+        onSubmit={handleSubmit(onSubmit)}
       >
+        {/*Иконки редактирования и удалени */}
         <div className={style.iconContainer}>
           {level > 0 && <div className={style.rootLine}></div>}
           {row.childCounter > 0 && (
@@ -149,74 +171,71 @@ const TableRow: React.FC<TableRowProps> = ({
             </div>
           )}
         </div>
+
         <div className={style.cellWrapper}>
           {isEditing ? (
             <input
               {...register("rowName")}
               className={style.rowInput}
               type="text"
-              // value={row.rowName}
-              // onChange={(e) => handleUpdate(row.id, "rowName", e.target.value)}
+              onKeyDown={handleUserKeyPress}
             />
           ) : (
             row.rowName
           )}
         </div>
+
         <div className={style.cellWrapper}>
           {isEditing ? (
             <input
               {...register("salary")}
               className={style.rowInput}
               type="text"
-              // value={row.salary}
-              //  onChange={(e) =>
-              //  handleUpdate(row.id, "salary", Number(e.target.value))
-              // }
+              onKeyDown={handleUserKeyPress}
+              onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const { value } = e.target;
+                const newValue = value.replace(/[^0-9]/g, "");
+                e.target.value = newValue;
+              }}
             />
           ) : (
             formatNumber(row.salary)
           )}
         </div>
+
         <div className={style.cellWrapper}>
           {isEditing ? (
             <input
               {...register("equipmentCosts")}
               className={style.rowInput}
               type="text"
-              // value={row.equipmentCosts}
-              // onChange={(e) =>
-              //  handleUpdate(row.id, "equipmentCosts", Number(e.target.value))
-              //}
+              onKeyDown={handleUserKeyPress}
             />
           ) : (
             formatNumber(row.equipmentCosts)
           )}
         </div>
+
         <div className={style.cellWrapper}>
           {isEditing ? (
             <input
               {...register("overheads")}
               className={style.rowInput}
               type="text"
-              // value={row.overheads}
-              // onChange={(e) =>
-              //   handleUpdate(row.id, "overheads", Number(e.target.value))
-              //}
+              onKeyDown={handleUserKeyPress}
             />
           ) : (
             formatNumber(row.overheads)
           )}
         </div>
+
         <div className={style.cellWrapper}>
           {isEditing ? (
             <input
               {...register("estimatedProfit")}
               className={style.rowInput}
               type="text"
-              // value={row.estimatedProfit}
-              // onChange={(e) =>
-              //  handleUpdate(row.id, "estimatedProfit", Number(e.target.value))
-              // }
+              onKeyDown={handleUserKeyPress}
             />
           ) : (
             <div className={style.textWrapper}>
@@ -227,14 +246,7 @@ const TableRow: React.FC<TableRowProps> = ({
       </form>
       {row.child &&
         row.child.map((child) => (
-          <TableRow
-            key={child.id}
-            row={child}
-            level={level + 1}
-            // toggleEdit={toggleEdit}
-            // handleUpdate={handleUpdate}
-            // editingRowId={editingRowId}
-          />
+          <TableRow key={child.id} row={child} level={level + 1} />
         ))}
     </>
   );

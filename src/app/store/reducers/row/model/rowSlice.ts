@@ -1,19 +1,17 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import {
-  InitialRowData,
-  NewNodeData,
-  RowData,
-} from "../../../../../shared/api/types";
+import { InitialRowData, RowData } from "../../../../../shared/api/types";
 import {
   createRow,
   deleteRowAndChild,
   getTreeRows,
+  updateRow,
 } from "../../../../../shared/api";
 import {
   addEditingFieldAndCountChildren,
   removeRowRecursive,
   updateChangedRows,
+  updateNode,
 } from "./constants";
 
 interface IRowsState {
@@ -38,7 +36,7 @@ const rowSlice = createSlice({
   reducers: {
     addEmptyNode: (state, action) => {
       const parentID = action.payload;
-      const newNode: NewNodeData = {
+      const newNode: RowData = {
         id: Date.now(), // Генерируем временный ID для нового узла Date.now()
         parentId: parentID,
         total: 0,
@@ -118,31 +116,6 @@ const rowSlice = createSlice({
       };
       state.editedRowData = toggleEdit(state.editedRowData, action.payload.id);
     },
-
-    updateInTree: (state, action) => {
-      const updateField = (
-        rows: RowData[],
-        id: number,
-        field: string,
-        value: string | number
-      ): RowData[] => {
-        return rows.map((row) => {
-          if (row.id === id) {
-            return { ...row, [field]: value };
-          }
-          if (row.child) {
-            return { ...row, child: updateField(row.child, id, field, value) };
-          }
-          return row;
-        });
-      };
-      state.editedRowData = updateField(
-        state.editedRowData,
-        action.payload.id,
-        action.payload.field,
-        action.payload.value
-      );
-    },
   },
 
   extraReducers: (builder) => {
@@ -171,10 +144,6 @@ const rowSlice = createSlice({
         const rowIdToRemove = action.meta.arg;
         const { current, changed } = action.payload;
 
-        // console.log("current", current);
-        // console.log("Changed", changed);
-        // console.log("rowIdToDelete", rowIdToRemove);
-
         if (current === null) {
           state.editedRowData = removeRowRecursive(
             state.editedRowData,
@@ -199,38 +168,70 @@ const rowSlice = createSlice({
         state.isLoading = false;
         state.error = null;
 
-        // const newRow = action.payload;
-        // const addCreatedNodeRecursive = (
-        //   rows: RowData[],
-        //   id: number,
-        //   newNode: RowData
-        // ): RowData[] => {
-        //   return rows.map((row) => {
-        //     if (row.id === id) {
-        //       return {
-        //         ...row,
-        //         editing: false,
-        //         child: [...row.child, newNode],
-        //       };
-        //     }
-        //     if (row.child) {
-        //       return {
-        //         ...row,
-        //         child: addCreatedNodeRecursive(row.child, id, newNode),
-        //       };
-        //     }
-        //     return row;
-        //   });
-        // };
+        console.log("New row created:", action.payload);
 
-        // state.editedRowData = addCreatedNodeRecursive(
-        //   state.editedRowData,
-        //   newRow.parentId,
-        //   newRow
-        // );
-        // state.editingRowId = null;
+        const { current, changed } = action.payload;
+
+        if (current) {
+          // Добавляем новую ноду к родительской ноде или корневому уровню
+          const addNewNodeRecursive = (
+            rows: RowData[],
+            newNode: RowData
+          ): RowData[] => {
+            return rows.map((row) => {
+              if (row.id === newNode.parentId) {
+                return {
+                  ...row,
+                  child: [...row.child, newNode],
+                };
+              } else if (row.child && row.child.length > 0) {
+                return {
+                  ...row,
+                  child: addNewNodeRecursive(row.child, newNode),
+                };
+              }
+              return row;
+            });
+          };
+
+          state.editedRowData = addNewNodeRecursive(
+            state.editedRowData,
+            current
+          );
+        }
+
+        if (changed && changed.length > 0) {
+          state.editedRowData = updateChangedRows(state.editedRowData, changed);
+        }
       })
       .addCase(createRow.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      })
+
+      .addCase(updateRow.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateRow.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+
+        const { current, changed } = action.payload;
+
+        if (current) {
+          state.editedRowData = state.editedRowData.map((row) =>
+            updateNode(row, [current])
+          );
+        }
+
+        if (changed && changed.length > 0) {
+          state.editedRowData = state.editedRowData.map((row) =>
+            updateNode(row, changed)
+          );
+        }
+      })
+      .addCase(updateRow.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
       });
@@ -241,7 +242,6 @@ export const {
   addEmptyNode,
   initializeEditingFields,
   toggleEditInTree,
-  updateInTree,
   setEditingRowId,
 } = rowSlice.actions;
 
