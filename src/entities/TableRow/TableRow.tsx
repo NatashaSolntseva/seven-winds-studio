@@ -91,8 +91,6 @@ const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
       supportCosts: 0,
     };
 
-    console.log("newRow inputData", newNode);
-
     try {
       if (isNewRow) {
         await dispatch(createRow({ tempId: row.id, newRow: newNode }));

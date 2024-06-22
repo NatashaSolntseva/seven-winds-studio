@@ -36,7 +36,7 @@ const addEditingFieldAndCountChildren = (data: InitialRowData[]): RowData[] => {
       child: processedChildren, // Assign the processed children to the current node
       childCounter, // Add the `childCounter` field
       lastChildCount, // Add the `lastChildCount` field
-      parentId: null, // Add the `parentId` field, initially set to null
+      // parentId: null, // Add the `parentId` field, initially set to null
     };
   };
 

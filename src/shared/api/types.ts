@@ -18,7 +18,7 @@ export interface RowData extends InitialRowData {
   editing: boolean;
   childCounter: number;
   lastChildCount: number;
-  parentId: number | null | undefined;
+  parentId?: number | null;
   child: RowData[];
 }
 
