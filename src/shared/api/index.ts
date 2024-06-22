@@ -38,7 +38,7 @@ export const createRow = createAsyncThunk(
         `${BASE_URL}/v1/outlay-rows/entity/126491/row/create`,
         newRow
       );
-      return data;
+      return { data, tempId };
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         return rejectWithValue(error.response?.data ?? "Unknown error");

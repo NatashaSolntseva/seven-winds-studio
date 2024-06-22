@@ -169,8 +169,15 @@ const rowSlice = createSlice({
         state.isLoading = false;
         state.error = null;
 
-        const { current, changed } = action.payload;
-        const tempId = action.meta.arg.tempId;
+        const { data, tempId } = action.payload;
+        const changed = data.changed;
+        const current = data.current;
+        console.log("data", data);
+        console.log("tempId", tempId);
+        console.log("changed", changed);
+        console.log("current", current);
+        // const { current, changed } = action.payload;
+        // const tempId = action.meta.arg.tempId;
 
         if (current) {
           state.editedRowData = updateTemporaryNode(
