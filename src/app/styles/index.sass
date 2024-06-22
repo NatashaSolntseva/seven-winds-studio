@@ -1,0 +1,55 @@
+@import "./fonts.sass"
+@import "./variables.sass"
+
+body 
+  margin: 0
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  display: flex
+  flex-direction: column
+  align-items: center
+  background-color: $colorBlackPrimary
+  color: $colorWhitePrimary
+  font-family: $fontTextPrimary
+
+* 
+  box-sizing: border-box
+  margin: 0
+
+html 
+  scroll-behavior: smooth    
+
+header 
+  padding: 0
+
+button
+  padding: 0
+  background-color: transparent
+  border: none
+  cursor: pointer
+  outline: none
+  -webkit-tap-highlight-color: transparent
+
+h1, h2, h3, h4 
+    margin: 0
+    font-weight: normal
+
+img
+  width: auto 
+  max-width: 100%
+  height: auto
+
+p
+  margin: 0
+
+ul
+  margin: 0
+  padding-left: 0
+
+li
+  list-style-type: none
+
+a
+  text-decoration: none
+  cursor: pointer
+  -webkit-tap-highlight-color: transparent

@@ -1,0 +1,23 @@
+@import '../../app/styles/variables.sass'
+
+.navList
+  display: flex
+  gap: 20px
+
+.navItem  
+  padding-bottom: 14px
+  padding-inline: 4px
+  border-bottom: 2px solid transparent
+  transition: border-bottom-color 0.3s ease, color 0.3s ease
+  &:hover
+    border-bottom-color: $colorWhitePrimary    
+  &:hover .navLink    
+    color: $colorWhitePrimary
+  &.active
+    border-bottom-color: $colorWhitePrimary  
+  &.active .navLink   
+    color: $colorWhitePrimary   
+
+.navLink
+  text-decoration: none
+  color: $colorLightGrey  

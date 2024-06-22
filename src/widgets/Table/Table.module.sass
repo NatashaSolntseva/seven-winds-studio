@@ -1,0 +1,23 @@
+@import '../../app/styles/variables.sass'
+
+.table
+  width: 100%
+  padding-top: 11px
+  padding-left: 10px
+  border-top: 1px solid $colorDarkGrey
+  background-color:  $colorBlackSecondary
+  min-height: calc(100vh  -  88px) 
+
+.tableHead 
+  display: grid
+  grid-template-columns: minmax(110px,1fr) 7fr repeat(4, minmax(200px, 2fr))
+  padding-bottom: 12px
+  color: $colorLightGrey
+  font-size: 14px  
+  border-bottom: 1px solid $colorDarkGrey    
+
+.loaderWrapper  
+  margin-top: 30vh
+  display: flex
+  align-self: center
+  justify-content: center

@@ -1,0 +1,16 @@
+@import '../../../app/styles/variables.sass'
+
+.btn
+  padding: 7px
+  background-color: $colorGrey
+  border-radius: 6px
+  font-family: $fontTextPrimary
+  font-size: 14px
+  color: $colorWhitePrimary
+  transition: background-color 0.3s ease
+  &:hover
+    background-color: $colorLightGrey
+    
+.btn:disabled
+  opacity: 0.5
+  cursor: not-allowed
