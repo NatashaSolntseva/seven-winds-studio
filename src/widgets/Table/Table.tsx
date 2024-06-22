@@ -21,8 +21,6 @@ export function Table() {
 
   const { editedRowData, isLoading } = useAppSelector(selectRows);
 
-  console.log("MegaTree EDITED", editedRowData);
-
   return isLoading ? (
     <div className={style.loaderWrapper}>
       <Loader />
