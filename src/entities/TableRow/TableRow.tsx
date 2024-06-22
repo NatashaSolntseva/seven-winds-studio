@@ -66,7 +66,6 @@ const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
   };
 
   const toggleEdit = (id: number) => {
-    // Проверяем, если уже редактируется другая строка и она не равна текущей строке
     if (editingRowId !== null && editingRowId !== id) {
       return;
     }

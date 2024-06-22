@@ -10,6 +10,7 @@ import {
 import {
   addEditingFieldAndCountChildren,
   removeRowRecursive,
+  updateChildCounters,
   updateNode,
   updateTemporaryNode,
 } from "./constants";
@@ -56,17 +57,13 @@ const rowSlice = createSlice({
         child: [],
       };
 
-      // Функция для добавления нового узла рекурсивно
       const addNodeRecursive = (
         rows: RowData[],
         parentId: number | null
       ): RowData[] => {
         if (parentId === null) {
-          // Добавляем новый узел уровня ноль (корневой узел)
           return [...rows, newNode];
         }
-
-        // Ищем узел с указанным parentId и добавляем к его детям newNode
         return rows.map((row) => {
           if (row.id === parentId) {
             return {
@@ -83,10 +80,12 @@ const rowSlice = createSlice({
         });
       };
 
-      // Обновляем состояние добавлением нового узла
       state.editedRowData = addNodeRecursive(state.editedRowData, parentID);
 
-      // Устанавливаем editingRowId для новой ноды
+      if (parentID !== null) {
+        state.editedRowData = updateChildCounters(state.editedRowData);
+      }
+
       state.editingRowId = newNode.id;
     },
 
@@ -117,7 +116,6 @@ const rowSlice = createSlice({
       state.editedRowData = toggleEdit(state.editedRowData, action.payload.id);
     },
   },
-  // ----------------------------------------------------------------------------------
   extraReducers: (builder) => {
     builder
       .addCase(getTreeRows.pending, (state) => {
@@ -156,6 +154,7 @@ const rowSlice = createSlice({
             updateNode(row, changed)
           );
         }
+        state.editedRowData = updateChildCounters(state.editedRowData);
       })
       .addCase(deleteRowAndChild.rejected, (state, action) => {
         state.isLoading = false;
@@ -170,19 +169,10 @@ const rowSlice = createSlice({
         state.isLoading = false;
         state.error = null;
 
-        console.log("New row created (API response):", action.payload);
-
         const { current, changed } = action.payload;
-        const parentId = action.meta.arg.parentId;
-        console.log("parentId", parentId);
         const tempId = action.meta.arg.tempId;
-        console.log("tempId", tempId);
 
         if (current) {
-          console.log(
-            "Заменяем ноду временную на данные с сервера вот эти",
-            current
-          );
           state.editedRowData = updateTemporaryNode(
             state.editedRowData,
             tempId,
