@@ -2,7 +2,7 @@
 
 .tableRow
   display: grid
-  grid-template-columns: 110px 7fr repeat(4, minmax(200px, 2fr))
+  grid-template-columns: 110px 757px 800px
   font-size: 14px  
   border-bottom: 1px solid $colorDarkGrey    
 
@@ -42,11 +42,23 @@
   width: 1px
   background-color: $colorWhitePrimary
 
+.numbersCellWrapper 
+  display: flex
+  // width: 100%
+  // justify-content: space-between
+  flex: 3
+
 .cellWrapper
   display: flex
+  flex: 1
   align-items: center  
   padding: 12px
   cursor: pointer
+
+.cellText
+  width: 100%
+  min-width: 200px
+  padding: 12px
 .textWrapper 
   padding: 12px
 .rowInput

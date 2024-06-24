@@ -1,7 +1,5 @@
 # CRM-система (тестовое задание для Seven Winds Studio)
 
-[Посмотреть проект можно по ссылке]()
-
 ## Стек технологий
 
 [![React](https://img.shields.io/badge/react-%23404d59.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://react.dev/)

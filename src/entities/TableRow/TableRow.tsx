@@ -179,64 +179,87 @@ const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
             row.rowName
           )}
         </div>
+        <div className={style.numbersCellWrapper}>
+          <div className={style.cellWrapper}>
+            {isEditing ? (
+              <input
+                {...register("salary")}
+                className={style.rowInput}
+                type="text"
+                onKeyDown={handleUserKeyPress}
+                onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const { value } = e.target;
+                  const newValue = value.replace(/[^0-9]/g, "");
+                  e.target.value = newValue;
+                }}
+              />
+            ) : (
+              <span className={style.cellText}>{formatNumber(row.salary)}</span>
+            )}
+          </div>
 
-        <div className={style.cellWrapper}>
-          {isEditing ? (
-            <input
-              {...register("salary")}
-              className={style.rowInput}
-              type="text"
-              onKeyDown={handleUserKeyPress}
-              onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const { value } = e.target;
-                const newValue = value.replace(/[^0-9]/g, "");
-                e.target.value = newValue;
-              }}
-            />
-          ) : (
-            formatNumber(row.salary)
-          )}
-        </div>
+          <div className={style.cellWrapper}>
+            {isEditing ? (
+              <input
+                {...register("equipmentCosts")}
+                className={style.rowInput}
+                type="text"
+                onKeyDown={handleUserKeyPress}
+                onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const { value } = e.target;
+                  const newValue = value.replace(/[^0-9]/g, "");
+                  e.target.value = newValue;
+                }}
+              />
+            ) : (
+              <span className={style.cellText}>
+                {formatNumber(row.equipmentCosts)}
+              </span>
+            )}
+          </div>
 
-        <div className={style.cellWrapper}>
-          {isEditing ? (
-            <input
-              {...register("equipmentCosts")}
-              className={style.rowInput}
-              type="text"
-              onKeyDown={handleUserKeyPress}
-            />
-          ) : (
-            formatNumber(row.equipmentCosts)
-          )}
-        </div>
+          <div className={style.cellWrapper}>
+            {isEditing ? (
+              <input
+                {...register("overheads")}
+                className={style.rowInput}
+                type="text"
+                onKeyDown={handleUserKeyPress}
+                onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const { value } = e.target;
+                  const newValue = value.replace(/[^0-9]/g, "");
+                  e.target.value = newValue;
+                }}
+              />
+            ) : (
+              <span className={style.cellText}>
+                {formatNumber(row.overheads)}
+              </span>
+            )}
+          </div>
 
-        <div className={style.cellWrapper}>
-          {isEditing ? (
-            <input
-              {...register("overheads")}
-              className={style.rowInput}
-              type="text"
-              onKeyDown={handleUserKeyPress}
-            />
-          ) : (
-            formatNumber(row.overheads)
-          )}
-        </div>
-
-        <div className={style.cellWrapper}>
-          {isEditing ? (
-            <input
-              {...register("estimatedProfit")}
-              className={style.rowInput}
-              type="text"
-              onKeyDown={handleUserKeyPress}
-            />
-          ) : (
-            <div className={style.textWrapper}>
-              {formatNumber(row.estimatedProfit)}
-            </div>
-          )}
+          <div className={style.cellWrapper}>
+            {isEditing ? (
+              <input
+                {...register("estimatedProfit")}
+                className={style.rowInput}
+                type="text"
+                onKeyDown={handleUserKeyPress}
+                onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const { value } = e.target;
+                  const newValue = value.replace(/[^0-9]/g, "");
+                  e.target.value = newValue;
+                }}
+              />
+            ) : (
+              // <div className={style.textWrapper}>
+              //   {formatNumber(row.estimatedProfit)}
+              // </div>
+              <span className={style.cellText}>
+                {formatNumber(row.estimatedProfit)}
+              </span>
+            )}
+          </div>
         </div>
       </form>
       {row.child &&
