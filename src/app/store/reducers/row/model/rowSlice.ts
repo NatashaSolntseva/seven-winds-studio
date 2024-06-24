@@ -105,7 +105,7 @@ const rowSlice = createSlice({
           if (row.id === id) {
             return { ...row, editing: !row.editing };
           } else if (row.editing) {
-            return { ...row, editing: false }; // Снимаем режим редактирования с других строк
+            return { ...row, editing: false };
           }
           if (row.child) {
             return { ...row, child: toggleEdit(row.child, id) };
@@ -172,12 +172,6 @@ const rowSlice = createSlice({
         const { data, tempId } = action.payload;
         const changed = data.changed;
         const current = data.current;
-        console.log("data", data);
-        console.log("tempId", tempId);
-        console.log("changed", changed);
-        console.log("current", current);
-        // const { current, changed } = action.payload;
-        // const tempId = action.meta.arg.tempId;
 
         if (current) {
           state.editedRowData = updateTemporaryNode(

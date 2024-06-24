@@ -130,6 +130,7 @@ const updateTemporaryNode = (
       return {
         ...row,
         ...newData, // Update only the specified fields with data from the server
+        parentId: undefined,
       };
     } else if (row.child && row.child.length > 0) {
       return {
