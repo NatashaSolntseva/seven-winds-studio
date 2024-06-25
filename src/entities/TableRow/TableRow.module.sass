@@ -2,7 +2,7 @@
 
 .tableRow
   display: grid
-  grid-template-columns: 110px 757px 800px
+  grid-template-columns: minmax(110px, 200px) auto 800px
   font-size: 14px  
   border-bottom: 1px solid $colorDarkGrey    
 
@@ -15,6 +15,7 @@
   display: flex
   align-items: center
   padding-right: 25px  
+  position: relative
   
 .iconWrapper button
   &:disabled
@@ -35,32 +36,40 @@
   background-color: $colorWhitePrimary
   margin-right: 5px
 
+.redRootLine
+  color: red
+  position: absolute
+  top: 12px
+  left: -9px
+  width: 12px
+  height: 1px
+  background-color: $colorWhitePrimary
+
 .rootVerticalLine 
   position: absolute
-  top: 40px
-  left: 10px
+  top: 21px
+  left: 11px
   width: 1px
   background-color: $colorWhitePrimary
 
 .numbersCellWrapper 
   display: flex
-  // width: 100%
-  // justify-content: space-between
-  flex: 3
+  
 
 .cellWrapper
-  display: flex
-  flex: 1
+  display: flex  
   align-items: center  
   padding: 12px
   cursor: pointer
+  min-width: 200px
 
 .cellText
-  width: 100%
-  min-width: 200px
+  width: 100% 
   padding: 12px
+
 .textWrapper 
   padding: 12px
+
 .rowInput
   width: 100%
   background-color: transparent

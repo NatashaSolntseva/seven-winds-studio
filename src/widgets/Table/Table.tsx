@@ -29,11 +29,11 @@ export function Table() {
     <div className={style.table}>
       <div className={style.tableHead}>
         <div>Уровень</div>
-        <div>Наименование работ</div>
-        <div>Основная з/п</div>
-        <div>Оборудование</div>
-        <div>Накладные расходы</div>
-        <div>Сметная прибыль</div>
+        <div style={{ paddingLeft: "10px" }}>Наименование работ</div>
+        <div style={{ paddingLeft: "20px" }}>Основная з/п</div>
+        <div style={{ paddingLeft: "20px" }}>Оборудование</div>
+        <div style={{ paddingLeft: "20px" }}>Накладные расходы</div>
+        <div style={{ paddingLeft: "20px" }}>Сметная прибыль</div>
       </div>
       <div className={style.tableBody}>
         {editedRowData.map((row) => (
