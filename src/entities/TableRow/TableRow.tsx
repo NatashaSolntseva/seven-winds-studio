@@ -116,24 +116,25 @@ const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
       <form
         className={style.tableRow}
         onDoubleClick={() => toggleEdit(row.id)}
-        style={{ paddingLeft: `${level * 20}px` }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        {/*Иконки редактирования и удалени */}
-        <div className={style.iconContainer}>
-          {level > 0 && <div className={style.rootLine}></div>}
-          {row.childCounter > 0 && (
-            <div
-              className={style.rootVerticalLine}
-              style={{
-                height: `${
-                  57 + 66 * (row.childCounter - 1 - row.lastChildCount)
-                }px`,
-              }}
-            ></div>
-          )}
+        <div
+          className={style.iconContainer}
+          style={{ paddingLeft: `${level * 20}px` }}
+        >
           {isEditing ? (
             <div className={style.iconWrapper}>
+              {level > 0 && <div className={style.redRootLine}></div>}
+              {row.childCounter > 0 && (
+                <div
+                  className={style.rootVerticalLine}
+                  style={{
+                    height: `${
+                      57 + 66 * (row.childCounter - 1 - row.lastChildCount)
+                    }px`,
+                  }}
+                ></div>
+              )}
               <button disabled>
                 <img className={style.rowIcon} src={itemIcon} alt="icon" />
               </button>
@@ -148,6 +149,17 @@ const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
               onMouseEnter={() => setHoveredIcon(true)}
               onMouseLeave={() => setHoveredIcon(false)}
             >
+              {level > 0 && <div className={style.redRootLine}></div>}
+              {row.childCounter > 0 && (
+                <div
+                  className={style.rootVerticalLine}
+                  style={{
+                    height: `${
+                      57 + 66 * (row.childCounter - 1 - row.lastChildCount)
+                    }px`,
+                  }}
+                ></div>
+              )}
               <button
                 onClick={() => handleAddChild(row.id)}
                 disabled={!(hoveredIcon && editingRowId === null)}
@@ -252,9 +264,6 @@ const TableRow: React.FC<TableRowProps> = ({ row, level }) => {
                 }}
               />
             ) : (
-              // <div className={style.textWrapper}>
-              //   {formatNumber(row.estimatedProfit)}
-              // </div>
               <span className={style.cellText}>
                 {formatNumber(row.estimatedProfit)}
               </span>
